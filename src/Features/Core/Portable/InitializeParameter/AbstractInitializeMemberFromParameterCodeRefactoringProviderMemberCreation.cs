@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -10,7 +9,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeGeneration;
 using Microsoft.CodeAnalysis.Diagnostics.Analyzers.NamingStyles;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.ErrorReporting;
 using Microsoft.CodeAnalysis.PooledObjects;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Shared.Extensions;
@@ -49,14 +47,14 @@ namespace Microsoft.CodeAnalysis.InitializeParameter
                     new NamingStyles.NamingStyle(Guid.NewGuid(), capitalizationScheme: Capitalization.PascalCase),
                     enforcementLevel: DiagnosticSeverity.Hidden),
                 new NamingRule(new SymbolSpecification(
-                    Guid.NewGuid(), "Field",
-                    ImmutableArray.Create(new SymbolSpecification.SymbolKindOrTypeKind(SymbolKind.Field))),
-                    new NamingStyles.NamingStyle(Guid.NewGuid(), capitalizationScheme: Capitalization.CamelCase),
-                    enforcementLevel: DiagnosticSeverity.Hidden),
-                new NamingRule(new SymbolSpecification(
                     Guid.NewGuid(), "FieldWithUnderscore",
                     ImmutableArray.Create(new SymbolSpecification.SymbolKindOrTypeKind(SymbolKind.Field))),
                     new NamingStyles.NamingStyle(Guid.NewGuid(), prefix: "_", capitalizationScheme: Capitalization.CamelCase),
+                    enforcementLevel: DiagnosticSeverity.Hidden),
+                new NamingRule(new SymbolSpecification(
+                    Guid.NewGuid(), "Field",
+                    ImmutableArray.Create(new SymbolSpecification.SymbolKindOrTypeKind(SymbolKind.Field))),
+                    new NamingStyles.NamingStyle(Guid.NewGuid(), capitalizationScheme: Capitalization.CamelCase),
                     enforcementLevel: DiagnosticSeverity.Hidden));
 
         protected abstract SyntaxNode TryGetLastStatement(IBlockOperation blockStatementOpt);
@@ -215,7 +213,7 @@ namespace Microsoft.CodeAnalysis.InitializeParameter
 
                 // First, look for the right containing type (As a type may be partial). 
                 // We want the type-block that this constructor is contained within.
-                var typeDeclaration = 
+                var typeDeclaration =
                     parameter.ContainingType.DeclaringSyntaxReferences
                                             .Select(r => GetTypeBlock(r.GetSyntax(cancellationToken)))
                                             .Single(d => memberDeclaration.Ancestors().Contains(d));
@@ -494,7 +492,7 @@ namespace Microsoft.CodeAnalysis.InitializeParameter
         private ImmutableArray<string> GetParameterWordParts(IParameterSymbol parameter)
         {
             var parts = StringBreaker.GetWordParts(parameter.Name);
-            var result  = CreateWords(parts, parameter.Name);
+            var result = CreateWords(parts, parameter.Name);
             parts.Free();
             return result;
         }
